@@ -83,25 +83,25 @@ def krok4(vertical_lines : List[int], horizontal_lines : List[int], matrix : Lis
     
 
 
-def krok4_test():
-    test_matrix = [[0, 0, 1, 0, 5],
-                   [1, 6, 2, 0, 3],
-                   [1, 2, 1, 5, 0],
-                   [3, 9, 0, 4, 0],
-                   [1, 1, 2, 4, 0]]
+# def krok4_test():
+#     test_matrix = np.array([[0, 0, 1, 0, 5],
+#                    [1, 6, 2, 0, 3],
+#                    [1, 2, 1, 5, 0],
+#                    [3, 9, 0, 4, 0],
+#                    [1, 1, 2, 4, 0]])
     
-    h_lines = [0, 1, 3]
-    v_lines = [4]
-    phi = 6
+#     h_lines = [0, 1, 3]
+#     v_lines = [4]
+#     phi = 6
 
-    phi = krok4(v_lines, h_lines, test_matrix, phi)
+#     phi = krok4(v_lines, h_lines, test_matrix, phi)
 
-    print(phi, "\n")
+#     print(phi, "\n")
 
-    for row in test_matrix:
-        print(row)
+#     for row in test_matrix:
+#         print(row)
 
-krok4_test()
+# krok4_test()
 
 
 
@@ -193,3 +193,31 @@ A = np.array([[0, 0, 0],
               [0, 1, 1],
               [0, 1, 1]])
 print(zera_niezal(A))
+
+
+
+
+
+
+
+def main():
+    macierz_z_wykladu = np.array([[5, 2, 3, 2, 7],
+                                  [6, 8, 4, 2, 5],
+                                  [6, 4, 3, 7, 2],
+                                  [6, 9, 0, 4, 0],
+                                  [4, 1, 2, 4, 0]])
+    
+    macierz_z_wykladu, phi = reduction(macierz_z_wykladu)
+
+    macierz_zer = zera_niezal(macierz_z_wykladu)
+
+    # wykreślanie zer?
+    vert_lines = [1, 2]
+    hori_lines = [2, 4]
+
+    phi = krok4(vert_lines, hori_lines, macierz_z_wykladu, phi)
+    
+
+
+
+main()
