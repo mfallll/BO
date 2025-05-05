@@ -108,15 +108,19 @@ def alg1(a, zeros):
             break
 
     #Poszukiwanie minimalnego pokrycia wierzchołkowego
-    crossrow = [False for i in range(h)]
-    crosscol = [False for i in range(w)]
+    #crossrow = [False for i in range(h)]
+    crossrow = []
+    #crosscol = [False for i in range(w)]
+    crosscol = []
     #Przekreślamy wszystkie nieoznakowane wiersze oraz oznakowane kolumny
     for i in range(h):
         if not rows[i]:
-            crossrow[i] = True
+            crossrow.append(i)
+            #crossrow[i] = True
     for i in range(w):
         if cols[i]:
-            crosscol[i] = True
+            crosscol.append(i)
+            #crosscol[i] = True
 
     return crossrow, crosscol
     
