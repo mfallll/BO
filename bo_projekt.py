@@ -66,7 +66,7 @@ def krok4(vertical_lines: List[int], horizontal_lines: List[int], matrix: List[L
                     matrix[y][x] -= minimum
 
 
-    for y, row in enumerate(matrix):    #Odejmowanie znalezionego elementu od wszystkich elementów nieprzykrytych liniami
+    for y, row in enumerate(matrix):    #Dodawanie minimum do wszystkich elementów na przecięciach
         for x, el in enumerate(row):
             if x in vertical_lines:
                 if y in horizontal_lines:
@@ -288,38 +288,26 @@ def schemat_ogl(matrix: np.ndarray) -> None:
         [hori_lines, vert_lines] = alg1(matrix, macierz_zer)
         print(f"Rzędy do wykreślenia: {hori_lines}")
         print(f"Kolumny do wykreślenia: {vert_lines}")
-         #Krok 5: Próbwa powiększenia zbioru zer niezależnych
+         #Krok 5: Próba powiększenia zbioru zer niezależnych
         phi = krok4(vert_lines, hori_lines, matrix, phi)
+        print(matrix)
         print(f"Nowe ograniczenie dolne {phi}")
 
 
 
 
-schemat_ogl(np.array([[5, 2, 3, 2, 7],
-                        [6, 8, 4, 2, 5],
-                        [6, 4, 3, 7, 2],
-                        [6, 9, 0, 4, 0],
-                        [4, 1, 2, 4, 0]]))         
-    
 
 
-
-
-
-dol_macirz = np.array([
-    [57, 46, 14, 68, 94, 70, 58, 22, 45, 61],
-    [14, 28, 56, 36, 67, 21, 20, 87, 96, 7],
-    [65, 11, 93, 5, 1, 50, 77, 50, 55, 24],
-    [80, 1, 85, 33, 70, 30, 2, 62, 65, 13],
-    [53, 92, 58, 95, 97, 12, 7, 20, 1, 30],
-    [22, 53, 99, 87, 79, 37, 61, 9, 53, 56],
-    [11, 41, 19, 86, 2, 51, 81, 94, 46, 8],
-    [2, 56, 21, 64, 94, 63, 50, 81, 78, 67],
-    [32, 60, 96, 27, 3, 54, 97, 22, 49, 99],
-    [72, 95, 88, 34, 24, 78, 47, 52, 99, 67]
+matrix = np.array([
+    [58, 80, 20, 64, 9, 95],
+    [5, 3, 21, 14, 32, 47],
+    [18, 82, 53, 79, 24, 31],
+    [23, 30, 42, 49, 63, 63],
+    [20, 51, 25, 77, 84, 26],
+    [18, 45, 99, 14, 17, 9]
 ])
     
 
 
-schemat_ogl(dol_macirz)
+schemat_ogl(matrix)
 
