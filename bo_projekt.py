@@ -34,8 +34,8 @@ def reduction(A: np.ndarray) -> Tuple[np.ndarray, float]:
         A2.append(new_col)
 
     A2 = np.array(A2)
-
-    return A2.T, phi
+    A2 = A2.T
+    return A2, phi
 
 def krok4(vertical_lines: List[int], horizontal_lines: List[int], matrix: List[List[Any]], phi: float) -> float:
     """
