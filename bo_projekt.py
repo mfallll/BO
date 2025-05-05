@@ -2,29 +2,41 @@ import numpy as np
 import copy
 from typing import List, Any
 
-# redukcja macierzy
-def reduction(A):
+def reduction(A : np.ndarray) -> tuple[np.ndarray, int]:
+    """
+    krok przygotowawczy algorytmu węgierskiego - redukcja macierzy
+
+    Args:
+        A (np.ndarray): macierz wejściowa
+
+    Returns:
+        A2 (np.ndarray): zredukowana macierz
+        phi (int): dolne ograniczenie wartości funkcji celu
+    """
     phi = 0
     A1 = []
 
-    for row in A:
-        min1 = min(row)
+    for row in A: #dla każdego rzędu macierzy A
+        min1 = min(row) #minimalny element w danym rzędzie
         phi += min1
         new_row = row - min1
-        A1.append(new_row)
+        A1.append(new_row) #kolejny rząd nowej macierzy - odpowiadający mu rząd macierzy A
+        #pomniejszony o jego minimalny element
     
     A1 = np.array(A1)
     A1 = A1.T
     A2 = []
     
-    for col in A1:
-        min2 = min(col)
+    for col in A1: #dla każdej kolumny macierzy A1
+        min2 = min(col) #minimalny element w danej kolumnie
         phi += min2
-        new_col = col - min(col)
+        new_col = col - min(col) #kolejna kolumna nowej macierzy - odpowiadająca jej kolumna macierzy A1
+        #pomniejszona o jej minimalny element
         A2.append(new_col)
 
     A2 = np.array(A2)
-    return A2.T, phi
+    A2 = A2.T
+    return A2, phi
 
 def krok4(vertical_lines : List[int], horizontal_lines : List[int], matrix : List[List[Any]], phi : Any):
     """
