@@ -1,83 +1,91 @@
 import numpy as np
 import copy
-from typing import List, Any
+from typing import List, Any, Tuple
 
-# redukcja macierzy
-def reduction(A):
+def reduction(A: np.ndarray) -> Tuple[np.ndarray, float]:
+    """
+    Wykonuje redukcję wierszy i kolumn oraz znajduje dolne ograniczenie wartości funkcji celu phi.
+    - A (np.ndarray): macierz, na której wykonywane są operacje.
+
+    Zwraca:
+    - A2 (np.ndarray): zredukowana macierz kosztów
+    - phi (float): dolne ograniczenie funkcji celu
+    """
+
+    #Inicjalizacja zmiennych
     phi = 0
     A1 = []
 
-    for row in A:
-        min1 = min(row)
+    for row in A: #Dla każdego rzędu macierzy A
+        min1 = min(row) #Znajduje minimalny element w danym rzędzie
         phi += min1
         new_row = row - min1
-        A1.append(new_row)
+        A1.append(new_row) #Kolejny rząd nowej macierzy - odpowiadający mu rząd macierzy A pomniejszony o jego minimalny element
     
+    #Inicjalizacja zmiennych
     A1 = np.array(A1)
     A1 = A1.T
     A2 = []
     
-    for col in A1:
-        min2 = min(col)
+    for col in A1: #Dla każdej kolumny macierzy A1
+        min2 = min(col) #Znajduje minimalny element w danej kolumnie
         phi += min2
-        new_col = col - min(col)
+        new_col = col - min(col) #Kolejna kolumna nowej macierzy - odpowiadająca jej kolumna macierzy A1 pomniejszona o jej minimalny element
         A2.append(new_col)
 
     A2 = np.array(A2)
-    return A2.T, phi
+    A2 = A2.T
+    return A2, phi
 
-def krok4(vertical_lines : List[int], horizontal_lines : List[int], matrix : List[List[Any]], phi : Any):
+def krok4(vertical_lines: List[int], horizontal_lines: List[int], matrix: List[List[Any]], phi: float) -> float:
     """
-    krok 4 algorytmu wegierskiego.
+    Realizuje krok 4 algorytmu wegierskiego -modyfikację macierzy na podstawie minimalnego nieprzykrytego elementu.
+    - vertical_lines (List[int]): indeksy kolumn przykrytych liniami pionowymi.
+    - horizontal_lines (List[int]): lista indeksy wierszy przykrytych liniami poziomymi.
+    - matrix (List[List[Any]]): macierz kosztów do modyfikacji.
+    - phi (float): bieżąca wartość funkcji celu
 
-    Args:
-        vertical_lines (List[int]): Lista indeksów kolumn przykrytych liniami pionowymi.
-        horizontal_lines (List[int]): Lista indeksów wierszy przykrytych liniami poziomymi.
-        matrix (List[List[Any]]): Macierz, na której wykonywane są operacje.
-        phi (List[Any]): argument phi
-
-    Returns:
-        phi: zmodyfikowane fi
+    Zwraca:
+    - phi (float): zmodyfikowana wartość funkcji celu.
     """
         
     inf = float("inf")
     minimum = inf
 
-    for y, row in enumerate(matrix):    # znajdowanie minimalnego elementu nieprzykrytego liniami
+    for y, row in enumerate(matrix):    #Znajdowanie minimalnego elementu nieprzykrytego liniami
         for x, el in enumerate(row):
             if x not in vertical_lines:
                 if y not in horizontal_lines:
                     if el < minimum:
                         minimum = el
 
-    for y, row in enumerate(matrix):    # odejmowanie znalezionego elementu od wszystkich elementów nieprzykrytych liniami
+    for y, row in enumerate(matrix):    #Odejmowanie znalezionego elementu od wszystkich elementów nieprzykrytych liniami
         for x, el in enumerate(row):
             if x not in vertical_lines:
                 if y not in horizontal_lines:
                     matrix[y][x] -= minimum
 
 
-    for y, row in enumerate(matrix):    # odejmowanie znalezionego elementu od wszystkich elementów nieprzykrytych liniami
+    for y, row in enumerate(matrix):    #Odejmowanie znalezionego elementu od wszystkich elementów nieprzykrytych liniami
         for x, el in enumerate(row):
             if x in vertical_lines:
                 if y in horizontal_lines:
                     matrix[y][x] += minimum
 
-    # powiększanie fi
-    # powiększanie fi o element minimalny
+    #Powiększanie fi o element minimalny
     return phi + minimum
 
-def alg1(a, zeros):
+def alg1(a: np.ndarray, zeros: np.ndarray) -> Tuple[List[int], List[int]]:
     """
     Wyznacza minimalny zbiór linii wykreślających wszystkie zera w macierzy.
-    - a: macierz kosztów
-    - zeros: macierz oznaczeń zera w `a`:
+    - a (np.ndarray): macierz kosztów
+    - zeros(np.ndarray): macierz oznaczeń zera, gdzie:
             - -1 oznacza zero niezależne
             - -2 oznacza zero zależne
 
     Zwraca:
-    - crossrow: lista określająca, które wiersze należy przekreślić (True = przekreślony)
-    - crosscol: lista określająca, które kolumny należy przekreślić (True = przekreślona)
+    - crossrow (List[int]): lista określająca, które wiersze należy przekreślić
+    - crosscol (List[int]): lista określająca, które kolumny należy przekreślić
     """
 
     #Inicjalizacja danych
@@ -97,7 +105,7 @@ def alg1(a, zeros):
         for i in range(w):
             for j in range(h):
                 if rows[j] and zeros[j, i] == -2:
-                    cols[j] = True
+                    cols[i] = True
         #Oznaczanie każdego wiersza mającego w oznakowanej kolumnie niezależne zero 
         for i in range(h):
             for j in range(w):
@@ -108,45 +116,60 @@ def alg1(a, zeros):
             break
 
     #Poszukiwanie minimalnego pokrycia wierzchołkowego
-    #crossrow = [False for i in range(h)]
     crossrow = []
-    #crosscol = [False for i in range(w)]
     crosscol = []
     #Przekreślamy wszystkie nieoznakowane wiersze oraz oznakowane kolumny
     for i in range(h):
         if not rows[i]:
             crossrow.append(i)
-            #crossrow[i] = True
     for i in range(w):
         if cols[i]:
             crosscol.append(i)
-            #crosscol[i] = True
 
     return crossrow, crosscol
     
-def zera_niezal_zachl(A: np.ndarray):
-    # zero zabierające najmniej zer
+def zera_niezal_zachl(A: np.ndarray) -> Tuple[np.ndarray, str]:
+    """
+    Znajduje zbiór niezależnych zer w macierzy kosztów przy użyciu zachłannego algorytmu.
+    - A (np.ndarray): macierz kosztów (zawierająca zera, które mają zostać pokryte).
+    
+    Zwraca:
+    - A_work (np.ndarray): macierz oznaczeń zera, gdzie:
+        - -1 oznacza zero niezależne,
+        - -2 oznacza zero zależne,
+    - status (str): 
+        - "DONE" jeśli wszystkie kolumny zostały pokryte zerami niezależnymi,
+        - "NOT_DONE" jeśli nie udało się pokryć wszystkich kolumn.
+    """
+
+    #Inicjalizacja zmiennych
+    A_work = copy.deepcopy(A)
     size = A.shape[0]
     rem_col = set([x for x in range(size)])
     rem_row = set([x for x in range(size)])
+
     while True:
         stop = True
         B = np.zeros((size, size)) + np.inf
         for y in rem_col:
             for x in rem_row:
                 if A[x, y] == 0:
+                    #Liczba zer w tym wierszu i kolumnie
                     B[x, y] = len([1 for i in rem_col if A[x, i] == 0]) + len([1 for i in rem_row if A[i, y] == 0]) - 2
                     stop = False
-        # zabieramy najmniejszy element albo kończymy
+
+        #Gdy nie ma już więcej zer do rozważenia
         if stop:
-            A[A == 0] = -2
+            A_work[A_work == 0] = -2
             if len(rem_col) == 0:
-                return A, 'DONE'
+                return A_work, 'DONE'
             else:
-                return A, 'NOT_DONE'
+                return A_work, 'NOT_DONE'
+            
         else:
+            #Wybiera zero zabierające najmniej innych zer
             x_min, y_min = np.unravel_index(np.argmin(B, axis=None), B.shape)
-            A[x_min, y_min] = -1
+            A_work[x_min, y_min] = -1 #Oznacza jako niezależne
             rem_col.remove(y_min)
             rem_row.remove(x_min)
 
@@ -236,7 +259,7 @@ def zera_niezal(A: np.ndarray):
             pass
 '''
 
-def main():
+def schemat_ogl():
     # macierz_z_wykladu = np.array([[5, 2, 3, 2, 7],
     #                               [6, 8, 4, 2, 5],
     #                               [6, 4, 3, 7, 2],
@@ -262,21 +285,31 @@ def main():
 
     macierz_z_wykladu, phi = reduction(macierz_z_wykladu)
     while True:
-        print(macierz_z_wykladu, phi)
-        macierz_zer, info = zera_niezal_zachl(macierz_z_wykladu)
+        #Krok 2: Znalezienie zbioru niezależnych zer
+        macierz_zer, info = zera_niezal_zachl(matrix)
+        
+
         if info == 'DONE':
+            #Jeśli znaleziono kompletny przydział – wypisz rozwiązanie
             print('Rozwiązanie x:')
-            print(macierz_z_wykladu[macierz_zer == -1].astype('uint8'))
+            macierz_zer[macierz_zer != -1] = 0
+            macierz_zer[macierz_zer == -1] = 1
+            print(macierz_zer)
             print(f"Sumaryczny koszt: {phi}")
             return
-        print(macierz_zer)
 
-        # wykreślanie zer
-        [hori_lines, vert_lines] = alg1(macierz_z_wykladu, macierz_zer)
-        print(vert_lines)
-        print(hori_lines)
-        phi = krok4(vert_lines, hori_lines, macierz_z_wykladu, phi)
+         #Krok 4: Wyznaczenie minimalnego zbioru linii wykreślających wszystkie zera
+        [hori_lines, vert_lines] = alg1(matrix, macierz_zer)
+         #Krok 5: Próbwa powiększenia zbioru zer niezależnych
+        phi = krok4(vert_lines, hori_lines, matrix, phi)
+        print(macierz_zer)
         print(macierz_z_wykladu)
-        print(phi)
-        return
-main()
+
+
+
+schemat_ogl(np.array([[5, 2, 3, 2, 7],
+                        [6, 8, 4, 2, 5],
+                        [6, 4, 3, 7, 2],
+                        [6, 9, 0, 4, 0],
+                        [4, 1, 2, 4, 0]]))
+
