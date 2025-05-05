@@ -259,31 +259,18 @@ def zera_niezal(A: np.ndarray):
             pass
 '''
 
-def schemat_ogl():
-    # macierz_z_wykladu = np.array([[5, 2, 3, 2, 7],
-    #                               [6, 8, 4, 2, 5],
-    #                               [6, 4, 3, 7, 2],
-    #                               [6, 9, 0, 4, 0],
-    #                               [4, 1, 2, 4, 0]])
-    
+def schemat_ogl(matrix: np.ndarray) -> None:
+    """
+    Wykonuje schemat ogólny algorytmu węgierskiego w celu rozwiązania problemu przyporządkowania.
+    - matrix (np.ndarray): macierz kosztów, dla której szukane jest optymalne przyporządkowanie.
+    """
+    print(f"Macierz początkowa: \n {matrix}")
 
-    dol_macirz = np.array([
-    [57, 46, 14, 68, 94, 70, 58, 22, 45, 61],
-    [14, 28, 56, 36, 67, 21, 20, 87, 96, 7],
-    [65, 11, 93, 5, 1, 50, 77, 50, 55, 24],
-    [80, 1, 85, 33, 70, 30, 2, 62, 65, 13],
-    [53, 92, 58, 95, 97, 12, 7, 20, 1, 30],
-    [22, 53, 99, 87, 79, 37, 61, 9, 53, 56],
-    [11, 41, 19, 86, 2, 51, 81, 94, 46, 8],
-    [2, 56, 21, 64, 94, 63, 50, 81, 78, 67],
-    [32, 60, 96, 27, 3, 54, 97, 22, 49, 99],
-    [72, 95, 88, 34, 24, 78, 47, 52, 99, 67]
-])
-    
-    macierz_z_wykladu = dol_macirz
+    #Krok 1: Redukcja macierzy (krok przygotowywawczy)
+    matrix, phi = reduction(matrix)
+    print(f"Macierz po redukcji: \n {matrix}")
+    print(f"Dolne ograniczenie funkcji celu: {phi}")
 
-
-    macierz_z_wykladu, phi = reduction(macierz_z_wykladu)
     while True:
         #Krok 2: Znalezienie zbioru niezależnych zer
         macierz_zer, info = zera_niezal_zachl(matrix)
@@ -305,9 +292,34 @@ def schemat_ogl():
         phi = krok4(vert_lines, hori_lines, matrix, phi)
         print(f"Nowe ograniczenie dolne {phi}")
 
+
+
+
 schemat_ogl(np.array([[5, 2, 3, 2, 7],
                         [6, 8, 4, 2, 5],
                         [6, 4, 3, 7, 2],
                         [6, 9, 0, 4, 0],
-                        [4, 1, 2, 4, 0]]))
+                        [4, 1, 2, 4, 0]]))         
+    
+
+
+
+
+
+dol_macirz = np.array([
+    [57, 46, 14, 68, 94, 70, 58, 22, 45, 61],
+    [14, 28, 56, 36, 67, 21, 20, 87, 96, 7],
+    [65, 11, 93, 5, 1, 50, 77, 50, 55, 24],
+    [80, 1, 85, 33, 70, 30, 2, 62, 65, 13],
+    [53, 92, 58, 95, 97, 12, 7, 20, 1, 30],
+    [22, 53, 99, 87, 79, 37, 61, 9, 53, 56],
+    [11, 41, 19, 86, 2, 51, 81, 94, 46, 8],
+    [2, 56, 21, 64, 94, 63, 50, 81, 78, 67],
+    [32, 60, 96, 27, 3, 54, 97, 22, 49, 99],
+    [72, 95, 88, 34, 24, 78, 47, 52, 99, 67]
+])
+    
+
+
+schemat_ogl(dol_macirz)
 
