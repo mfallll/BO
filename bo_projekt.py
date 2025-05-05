@@ -259,22 +259,25 @@ def zera_niezal(A: np.ndarray):
             pass
 '''
 
-def main():
-    macierz_z_wykladu = np.array([[5, 2, 3, 2, 7],
-                                  [6, 8, 4, 2, 5],
-                                  [6, 4, 3, 7, 2],
-                                  [6, 9, 0, 4, 0],
-                                  [4, 1, 2, 4, 0]])
-    '''
-    macierz_z_wykladu = np.array([[1, 2, 3],
-                                  [2, 4, 6],
-                                  [3, 6, 9]])
-    '''
-    macierz_z_wykladu, phi = reduction(macierz_z_wykladu)
+def schemat_ogl(matrix: np.ndarray) -> None:
+    """
+    Wykonuje schemat ogólny algorytmu węgierskiego w celu rozwiązania problemu przyporządkowania.
+    - matrix (np.ndarray): macierz kosztów, dla której szukane jest optymalne przyporządkowanie.
+    """
+    print(f"Macierz początkowa: \n {matrix}")
+
+    #Krok 1: Redukcja macierzy (krok przygotowywawczy)
+    matrix, phi = reduction(matrix)
+    print(f"Macierz po redukcji: \n {matrix}")
+    print(f"Dolne ograniczenie funkcji celu: {phi}")
+
     while True:
-        macierz_zer, info = zera_niezal_zachl(macierz_z_wykladu)
+        #Krok 2: Znalezienie zbioru niezależnych zer
+        macierz_zer, info = zera_niezal_zachl(matrix)
+        
+
         if info == 'DONE':
-            # rozwiązanie problemu
+            #Jeśli znaleziono kompletny przydział – wypisz rozwiązanie
             print('Rozwiązanie x:')
             macierz_zer[macierz_zer != -1] = 0
             macierz_zer[macierz_zer == -1] = 1
@@ -282,7 +285,13 @@ def main():
             print(f"Sumaryczny koszt: {phi}")
             return
 
-        # wykreślanie zer
-        [hori_lines, vert_lines] = alg1(macierz_z_wykladu, macierz_zer)
-        phi = krok4(vert_lines, hori_lines, macierz_z_wykladu, phi)
-main()
+         #Krok 4: Wyznaczenie minimalnego zbioru linii wykreślających wszystkie zera
+        [hori_lines, vert_lines] = alg1(matrix, macierz_zer)
+         #Krok 5: Próbwa powiększenia zbioru zer niezależnych
+        phi = krok4(vert_lines, hori_lines, matrix, phi)
+
+schemat_ogl(np.array([[5, 2, 3, 2, 7],
+                        [6, 8, 4, 2, 5],
+                        [6, 4, 3, 7, 2],
+                        [6, 9, 0, 4, 0],
+                        [4, 1, 2, 4, 0]]))
