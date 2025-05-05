@@ -290,11 +290,8 @@ def schemat_ogl(matrix: np.ndarray) -> None:
         print(f"Kolumny do wykreślenia: {vert_lines}")
          #Krok 5: Próba powiększenia zbioru zer niezależnych
         phi = krok4(vert_lines, hori_lines, matrix, phi)
-        print(matrix)
+        print(f"Macierz z powiększonych zbiorem zer niezależnych: \n{matrix}")
         print(f"Nowe ograniczenie dolne {phi}")
-
-
-
 
 
 
@@ -307,7 +304,5 @@ matrix = np.array([
     [18, 45, 99, 14, 17, 9]
 ])
     
-
-
 schemat_ogl(matrix)
 
