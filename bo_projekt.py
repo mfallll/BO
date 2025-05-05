@@ -287,7 +287,6 @@ def schemat_ogl():
     while True:
         #Krok 2: Znalezienie zbioru niezależnych zer
         macierz_zer, info = zera_niezal_zachl(matrix)
-        
 
         if info == 'DONE':
             #Jeśli znaleziono kompletny przydział – wypisz rozwiązanie
@@ -300,12 +299,11 @@ def schemat_ogl():
 
          #Krok 4: Wyznaczenie minimalnego zbioru linii wykreślających wszystkie zera
         [hori_lines, vert_lines] = alg1(matrix, macierz_zer)
+        print(f"Rzędy do wykreślenia: {hori_lines}")
+        print(f"Kolumny do wykreślenia: {vert_lines}")
          #Krok 5: Próbwa powiększenia zbioru zer niezależnych
         phi = krok4(vert_lines, hori_lines, matrix, phi)
-        print(macierz_zer)
-        print(macierz_z_wykladu)
-
-
+        print(f"Nowe ograniczenie dolne {phi}")
 
 schemat_ogl(np.array([[5, 2, 3, 2, 7],
                         [6, 8, 4, 2, 5],
