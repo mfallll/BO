@@ -1,7 +1,8 @@
 import numpy as np
 import copy
 from typing import List, Any
-#redukcja macierzy
+
+# redukcja macierzy
 def reduction(A):
     phi = 0
     A1 = []
@@ -24,21 +25,6 @@ def reduction(A):
 
     A2 = np.array(A2)
     return A2.T, phi
-
-# do usunięcia, ale działa jak na wykładzie
-# A1 = np.array([[5, 2, 3, 2, 7],
-#                [6, 8, 4, 2, 5],
-#                [6, 4, 3, 7, 2],
-#                [6, 9, 0, 4, 0],
-#                [4, 1, 2, 4, 0]])
-
-# result = reduction(A1)
-# print('Zredukowana macierz:\n{0}\n\nphi: {1}'.format(result[0], result[1]))
-
-
-
-
-
 
 def krok4(vertical_lines : List[int], horizontal_lines : List[int], matrix : List[List[Any]], phi : Any):
     """
@@ -77,14 +63,17 @@ def krok4(vertical_lines : List[int], horizontal_lines : List[int], matrix : Lis
                 if y in horizontal_lines:
                     matrix[y][x] += minimum
 
+    # powiększanie fi
+    # powiększanie fi o element minimalny
+    return phi + minimum
+
 def alg1(a, zeros):
     """
     Wyznacza minimalny zbiór linii wykreślających wszystkie zera w macierzy.
     - a: macierz kosztów
     - zeros: macierz oznaczeń zera w `a`:
-            - 1 oznacza zero niezależne
-            - -1 oznacza zero zależne
-            - None oznacza brak znaczenia
+            - -1 oznacza zero niezależne
+            - -2 oznacza zero zależne
 
     Zwraca:
     - crossrow: lista określająca, które wiersze należy przekreślić (True = przekreślony)
@@ -102,17 +91,17 @@ def alg1(a, zeros):
         colpre = copy.deepcopy(cols)
         #Oznaczanie każdego wiersza nie posiadającego niezależnego zera 
         for i in range(h):
-            if 1 not in zeros[i]:
+            if -1 not in zeros[i]:
                 rows[i] = True
         #Oznaczyanie każdej kolumny mającej zero zależne w oznaczonym wierszu
         for i in range(w):
             for j in range(h):
-                if rows[j] and zeros[j, i] == -1:
+                if rows[j] and zeros[j, i] == -2:
                     cols[j] = True
         #Oznaczanie każdego wiersza mającego w oznakowanej kolumnie niezależne zero 
         for i in range(h):
             for j in range(w):
-                if cols[j] and zeros[i, j] == 1:
+                if cols[j] and zeros[i, j] == -1:
                     rows[i] = True
         #Pętle należy kontynuować tak długo, aż nie jest możliwe dalsze oznakowanie     
         if rows == rowpre and cols == colpre:
@@ -130,43 +119,41 @@ def alg1(a, zeros):
             crosscol[i] = True
 
     return crossrow, crosscol
-
-    # powiększanie fi
-       # powiększanie fi o element minimalny
-
-    return phi + minimum
     
+def zera_niezal_zachl(A: np.ndarray):
+    # zero zabierające najmniej zer
+    size = A.shape[0]
+    rem_col = set([x for x in range(size)])
+    rem_row = set([x for x in range(size)])
+    while True:
+        stop = True
+        B = np.zeros((size, size)) + np.inf
+        for y in rem_col:
+            for x in rem_row:
+                if A[x, y] == 0:
+                    B[x, y] = len([1 for i in rem_col if A[x, i] == 0]) + len([1 for i in rem_row if A[i, y] == 0]) - 2
+                    stop = False
+        # zabieramy najmniejszy element albo kończymy
+        if stop:
+            A[A == 0] = -2
+            if len(rem_col) == 0:
+                return A, 'DONE'
+            else:
+                return A, 'NOT_DONE'
+        else:
+            x_min, y_min = np.unravel_index(np.argmin(B, axis=None), B.shape)
+            A[x_min, y_min] = -1
+            rem_col.remove(y_min)
+            rem_row.remove(x_min)
 
-
-# def krok4_test():
-#     test_matrix = np.array([[0, 0, 1, 0, 5],
-#                    [1, 6, 2, 0, 3],
-#                    [1, 2, 1, 5, 0],
-#                    [3, 9, 0, 4, 0],
-#                    [1, 1, 2, 4, 0]])
-    
-#     h_lines = [0, 1, 3]
-#     v_lines = [4]
-#     phi = 6
-
-#     phi = krok4(v_lines, h_lines, test_matrix, phi)
-
-#     print(phi, "\n")
-
-#     for row in test_matrix:
-#         print(row)
-
-# krok4_test()
-
-
-
-# szukanie zer niezależnych
+'''
+# alg. Munkresa
 class Super_break(Exception):
     pass
 
 def zera_niezal(A: np.ndarray):
 
-    '''
+    """
     zera niezależne
     0 - zero nieoznaczone
     -1 - zero niezależne
@@ -176,7 +163,7 @@ def zera_niezal(A: np.ndarray):
     A - macierz z oznaczonymi zerami
     marked_col/marked_row - oznaczone kolumny/wiersze
     DONE/NOT_DONE - informacja czy program znalazł ostateczne rozwiązanie
-    '''
+    """
 
 
     def stop_loop(A, row, col):
@@ -243,17 +230,7 @@ def zera_niezal(A: np.ndarray):
                                 return A, list(marked_col), list(marked_row), 'DONE'
         except Super_break:
             pass
-
-A = np.array([[0, 0, 0],
-              [0, 1, 1],
-              [0, 1, 1]])
-print(zera_niezal(A))
-
-
-
-
-
-
+'''
 
 def main():
     macierz_z_wykladu = np.array([[5, 2, 3, 2, 7],
@@ -261,22 +238,22 @@ def main():
                                   [6, 4, 3, 7, 2],
                                   [6, 9, 0, 4, 0],
                                   [4, 1, 2, 4, 0]])
-    
     macierz_z_wykladu, phi = reduction(macierz_z_wykladu)
-    print(macierz_z_wykladu, phi)
-    macierz_zer = zera_niezal(macierz_z_wykladu)
-    print(macierz_zer)
+    while True:
+        print(macierz_z_wykladu, phi)
+        macierz_zer, info = zera_niezal_zachl(macierz_z_wykladu)
+        if info == 'DONE':
+            print('Rozwiązanie x:')
+            print(macierz_z_wykladu[macierz_zer == -1].astype('uint8'))
+            print(f"Sumaryczny koszt: {phi}")
+            return
+        print(macierz_zer)
 
-    # wykreślanie zer?
-    [vert_lines, hori_lines] = alg1(macierz_z_wykladu, macierz_zer[0])
-    print(vert_lines)
-    print(hori_lines)
-
-    phi = krok4(vert_lines, hori_lines, macierz_z_wykladu, phi)
-
-
-
+        # wykreślanie zer
+        [hori_lines, vert_lines] = alg1(macierz_z_wykladu, macierz_zer)
+        print(vert_lines)
+        print(hori_lines)
+        phi = krok4(vert_lines, hori_lines, macierz_z_wykladu, phi)
+        print(macierz_z_wykladu)
+        return
 main()
-
-
-    
