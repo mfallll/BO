@@ -26,14 +26,14 @@ def reduction(A):
     return A2.T, phi
 
 # do usunięcia, ale działa jak na wykładzie
-A1 = np.array([[5, 2, 3, 2, 7],
-               [6, 8, 4, 2, 5],
-               [6, 4, 3, 7, 2],
-               [6, 9, 0, 4, 0],
-               [4, 1, 2, 4, 0]])
+# A1 = np.array([[5, 2, 3, 2, 7],
+#                [6, 8, 4, 2, 5],
+#                [6, 4, 3, 7, 2],
+#                [6, 9, 0, 4, 0],
+#                [4, 1, 2, 4, 0]])
 
-result = reduction(A1)
-print('Zredukowana macierz:\n{0}\n\nphi: {1}'.format(result[0], result[1]))
+# result = reduction(A1)
+# print('Zredukowana macierz:\n{0}\n\nphi: {1}'.format(result[0], result[1]))
 
 
 
@@ -263,15 +263,16 @@ def main():
                                   [4, 1, 2, 4, 0]])
     
     macierz_z_wykladu, phi = reduction(macierz_z_wykladu)
-
+    print(macierz_z_wykladu, phi)
     macierz_zer = zera_niezal(macierz_z_wykladu)
+    print(macierz_zer)
 
     # wykreślanie zer?
-    vert_lines = [1, 2]
-    hori_lines = [2, 4]
+    [vert_lines, hori_lines] = alg1(macierz_z_wykladu, macierz_zer[0])
+    print(vert_lines)
+    print(hori_lines)
 
     phi = krok4(vert_lines, hori_lines, macierz_z_wykladu, phi)
-    
 
 
 
