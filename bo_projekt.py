@@ -97,7 +97,7 @@ def alg1(a, zeros):
         for i in range(w):
             for j in range(h):
                 if rows[j] and zeros[j, i] == -2:
-                    cols[j] = True
+                    cols[i] = True
         #Oznaczanie każdego wiersza mającego w oznakowanej kolumnie niezależne zero 
         for i in range(h):
             for j in range(w):
@@ -108,24 +108,21 @@ def alg1(a, zeros):
             break
 
     #Poszukiwanie minimalnego pokrycia wierzchołkowego
-    #crossrow = [False for i in range(h)]
     crossrow = []
-    #crosscol = [False for i in range(w)]
     crosscol = []
     #Przekreślamy wszystkie nieoznakowane wiersze oraz oznakowane kolumny
     for i in range(h):
         if not rows[i]:
             crossrow.append(i)
-            #crossrow[i] = True
     for i in range(w):
         if cols[i]:
             crosscol.append(i)
-            #crosscol[i] = True
 
     return crossrow, crosscol
     
 def zera_niezal_zachl(A: np.ndarray):
     # zero zabierające najmniej zer
+    A_work = copy.deepcopy(A)
     size = A.shape[0]
     rem_col = set([x for x in range(size)])
     rem_row = set([x for x in range(size)])
@@ -139,14 +136,14 @@ def zera_niezal_zachl(A: np.ndarray):
                     stop = False
         # zabieramy najmniejszy element albo kończymy
         if stop:
-            A[A == 0] = -2
+            A_work[A_work == 0] = -2
             if len(rem_col) == 0:
-                return A, 'DONE'
+                return A_work, 'DONE'
             else:
-                return A, 'NOT_DONE'
+                return A_work, 'NOT_DONE'
         else:
             x_min, y_min = np.unravel_index(np.argmin(B, axis=None), B.shape)
-            A[x_min, y_min] = -1
+            A_work[x_min, y_min] = -1
             rem_col.remove(y_min)
             rem_row.remove(x_min)
 
@@ -242,22 +239,24 @@ def main():
                                   [6, 4, 3, 7, 2],
                                   [6, 9, 0, 4, 0],
                                   [4, 1, 2, 4, 0]])
+    '''
+    macierz_z_wykladu = np.array([[1, 2, 3],
+                                  [2, 4, 6],
+                                  [3, 6, 9]])
+    '''
     macierz_z_wykladu, phi = reduction(macierz_z_wykladu)
     while True:
-        print(macierz_z_wykladu, phi)
         macierz_zer, info = zera_niezal_zachl(macierz_z_wykladu)
         if info == 'DONE':
+            # rozwiązanie problemu
             print('Rozwiązanie x:')
-            print(macierz_z_wykladu[macierz_zer == -1].astype('uint8'))
+            macierz_zer[macierz_zer != -1] = 0
+            macierz_zer[macierz_zer == -1] = 1
+            print(macierz_zer)
             print(f"Sumaryczny koszt: {phi}")
             return
-        print(macierz_zer)
 
         # wykreślanie zer
         [hori_lines, vert_lines] = alg1(macierz_z_wykladu, macierz_zer)
-        print(vert_lines)
-        print(hori_lines)
         phi = krok4(vert_lines, hori_lines, macierz_z_wykladu, phi)
-        print(macierz_z_wykladu)
-        return
 main()
