@@ -20,7 +20,8 @@ def reduction(A: np.ndarray) -> Tuple[np.ndarray, float]:
         min1 = min(row) #Znajduje minimalny element w danym rzędzie
         phi += min1
         new_row = row - min1
-        A1.append(new_row) #Kolejny rząd nowej macierzy - odpowiadający mu rząd macierzy A pomniejszony o jego minimalny element
+        A1.append(new_row) #Kolejny rząd nowej macierzy - odpowiadający mu rząd macierzy A
+        #pomniejszony o jego minimalny element
     
     #Inicjalizacja zmiennych
     A1 = np.array(A1)
@@ -30,8 +31,9 @@ def reduction(A: np.ndarray) -> Tuple[np.ndarray, float]:
     for col in A1: #Dla każdej kolumny macierzy A1
         min2 = min(col) #Znajduje minimalny element w danej kolumnie
         phi += min2
-        new_col = col - min(col) #Kolejna kolumna nowej macierzy - odpowiadająca jej kolumna macierzy A1 pomniejszona o jej minimalny element
-        A2.append(new_col)
+        new_col = col - min(col)
+        A2.append(new_col) #Kolejna kolumna nowej macierzy - odpowiadająca jej kolumna macierzy A1
+        #pomniejszona o jej minimalny element
 
     A2 = np.array(A2)
     A2 = A2.T
