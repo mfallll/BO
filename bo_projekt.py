@@ -1,6 +1,6 @@
 import numpy as np
 import copy
-
+from typing import List, Any
 #redukcja macierzy
 def reduction(A):
     phi = 0
@@ -34,11 +34,13 @@ A1 = np.array([[5, 2, 3, 2, 7],
 
 result = reduction(A1)
 print('Zredukowana macierz:\n{0}\n\nphi: {1}'.format(result[0], result[1]))
-from typing import List, Any
 
 
 
-def krok4(vertical_lines : List[int], horizontal_lines : List[int], matrix : List[List[Any]], fi : List[Any]):
+
+
+
+def krok4(vertical_lines : List[int], horizontal_lines : List[int], matrix : List[List[Any]], phi : Any):
     """
     krok 4 algorytmu wegierskiego.
 
@@ -46,42 +48,35 @@ def krok4(vertical_lines : List[int], horizontal_lines : List[int], matrix : Lis
         vertical_lines (List[int]): Lista indeksów kolumn przykrytych liniami pionowymi.
         horizontal_lines (List[int]): Lista indeksów wierszy przykrytych liniami poziomymi.
         matrix (List[List[Any]]): Macierz, na której wykonywane są operacje.
-        fi (List[Any]): argument fi przekazywany jako jednoelementowa tablica [fi]
+        phi (List[Any]): argument phi
 
     Returns:
-        None: Funkcja modyfikuje macierz w miejscu.
+        phi: zmodyfikowane fi
     """
         
     inf = float("inf")
     minimum = inf
 
     for y, row in enumerate(matrix):    # znajdowanie minimalnego elementu nieprzykrytego liniami
-        for x, el in row:
+        for x, el in enumerate(row):
             if x not in vertical_lines:
                 if y not in horizontal_lines:
                     if el < minimum:
                         minimum = el
 
     for y, row in enumerate(matrix):    # odejmowanie znalezionego elementu od wszystkich elementów nieprzykrytych liniami
-        for x, el in row:
+        for x, el in enumerate(row):
             if x not in vertical_lines:
                 if y not in horizontal_lines:
                     matrix[y][x] -= minimum
 
 
     for y, row in enumerate(matrix):    # odejmowanie znalezionego elementu od wszystkich elementów nieprzykrytych liniami
-        for x, el in row:
+        for x, el in enumerate(row):
             if x in vertical_lines:
                 if y in horizontal_lines:
                     matrix[y][x] += minimum
 
-    # powiększanie fi
-    
-
-
-
-
-#działa dla przykładu z wykładu i guess
 def alg1(a, zeros):
     """
     Wyznacza minimalny zbiór linii wykreślających wszystkie zera w macierzy.
@@ -136,3 +131,151 @@ def alg1(a, zeros):
 
     return crossrow, crosscol
 
+    # powiększanie fi
+       # powiększanie fi o element minimalny
+
+    return phi + minimum
+    
+
+
+# def krok4_test():
+#     test_matrix = np.array([[0, 0, 1, 0, 5],
+#                    [1, 6, 2, 0, 3],
+#                    [1, 2, 1, 5, 0],
+#                    [3, 9, 0, 4, 0],
+#                    [1, 1, 2, 4, 0]])
+    
+#     h_lines = [0, 1, 3]
+#     v_lines = [4]
+#     phi = 6
+
+#     phi = krok4(v_lines, h_lines, test_matrix, phi)
+
+#     print(phi, "\n")
+
+#     for row in test_matrix:
+#         print(row)
+
+# krok4_test()
+
+
+
+# szukanie zer niezależnych
+class Super_break(Exception):
+    pass
+
+def zera_niezal(A: np.ndarray):
+
+    '''
+    zera niezależne
+    0 - zero nieoznaczone
+    -1 - zero niezależne
+    -2 - zero zależne
+
+    return:
+    A - macierz z oznaczonymi zerami
+    marked_col/marked_row - oznaczone kolumny/wiersze
+    DONE/NOT_DONE - informacja czy program znalazł ostateczne rozwiązanie
+    '''
+
+
+    def stop_loop(A, row, col):
+        size = A.shape[0]
+        done = True
+        for j in range(size):
+            for i in range(size):
+                if A[i, j] in [0, -1, -2] and i not in row and j not in col:
+                    done = False
+                    break
+            else:
+                continue
+            break
+        return done
+
+    size = A.shape[0]
+    # oznaczanie 0*
+    for y in range(size):
+        for x in range(size):
+            if A[x, y] == 0 and -1 not in A[x, :] and -1 not in A[:, y]:
+                A[x, y] = -1
+    while True:
+        # pokrycie 0*
+        marked_col = set([])
+        marked_row = set([])
+        for y in range(size):
+            if -1 in A[:, y]:
+                marked_col.add(y)
+        # znalezione rozwiązanie optymalne/nieoptymalne
+        if len(marked_col) == size:
+            return A, list(marked_col), list(marked_row), 'DONE'
+        elif stop_loop(A, marked_row, marked_col):
+            return A, list(marked_col), list(marked_row), 'DONE'
+        # oznaczenie zer prim
+        try:
+            for x in range(size):
+                for y in range(size):
+                    if A[x, y] == 0 and y not in marked_col and x not in marked_row:
+                        A[x, y] = -2
+                        if -1 not in A[x, :]:
+                            # konstrukcja serii
+                            star_coord = []
+                            prim_coord = []
+                            prim_coord.append((x, y))
+                            while -1 in A[:, y]:
+                                x = int(np.nonzero(A[:, y] == -1)[0][0])
+                                star_coord.append((x, y))
+                                y = int(np.nonzero(A[x, :] == -2)[0][0])
+                                prim_coord.append((x, y))
+                            # zmiana oznaczeń
+                            for x, y in star_coord:
+                                A[x, y] = 0
+                            for x, y in prim_coord:
+                                A[x, y] = -1
+                            # usunięcie primów
+                            A[A == -2] = 0
+                            raise Super_break()
+                        else:
+                            y_r = int(np.nonzero(A[x, :] == -1)[0][0])
+                            marked_row.add(x)
+                            marked_col.remove(y_r)
+                            # warunek stopu
+                            if stop_loop(A, marked_row, marked_col):
+                                return A, list(marked_col), list(marked_row), 'DONE'
+        except Super_break:
+            pass
+
+A = np.array([[0, 0, 0],
+              [0, 1, 1],
+              [0, 1, 1]])
+print(zera_niezal(A))
+
+
+
+
+
+
+
+def main():
+    macierz_z_wykladu = np.array([[5, 2, 3, 2, 7],
+                                  [6, 8, 4, 2, 5],
+                                  [6, 4, 3, 7, 2],
+                                  [6, 9, 0, 4, 0],
+                                  [4, 1, 2, 4, 0]])
+    
+    macierz_z_wykladu, phi = reduction(macierz_z_wykladu)
+
+    macierz_zer = zera_niezal(macierz_z_wykladu)
+
+    # wykreślanie zer?
+    vert_lines = [1, 2]
+    hori_lines = [2, 4]
+
+    phi = krok4(vert_lines, hori_lines, macierz_z_wykladu, phi)
+    
+
+
+
+main()
+
+
+    
