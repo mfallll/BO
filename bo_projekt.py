@@ -101,7 +101,7 @@ def alg1(a: np.ndarray, zeros: np.ndarray) -> Tuple[List[int], List[int]]:
         for i in range(h):
             if -1 not in zeros[i]:
                 rows[i] = True
-        #Oznaczyanie każdej kolumny mającej zero zależne w oznaczonym wierszu
+        #Oznaczanie każdej kolumny mającej zero zależne w oznaczonym wierszu
         for i in range(w):
             for j in range(h):
                 if rows[j] and zeros[j, i] == -2:
